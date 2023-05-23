@@ -8,7 +8,8 @@ public class tictacktoevanisha
 {
     static ArrayList<Integer> playerpositions = new ArrayList<Integer>();
     static ArrayList<Integer> cpupositions = new ArrayList<Integer>();
-    static char[][] gameboard={
+    static char[][] gameboard=
+    {
         {' ','|',' ','|',' '},
         {'-','+','-','+','-'},
         {' ','|',' ','|',' '},
@@ -17,14 +18,15 @@ public class tictacktoevanisha
     };
     //global vaiables
     public static char playersymbol1, playersymbol2;
-    public static String player1,player2,conti="y";
-    public static int choice;
+    public static String player1,player2="CPU",conti="y";
+    public static int choice,player1score,player2score;
     
     public static void main(String[] args)
-    {
+    {//main
         Scanner scan = new Scanner(System.in);
 
-        char[][] gameboardpos={
+        char[][] gameboardpos=
+        {
             {'1','|','2','|','3'},
             {'-','+','-','+','-'},
             {'4','|','5','|','6'},
@@ -43,12 +45,7 @@ public class tictacktoevanisha
                 System.out.print("Choose a symbol for "+player1+" - ");
                 playersymbol1 = scan.next().charAt(0);
                 playersymbol2 = (playersymbol1 == 'X') ? 'O' : 'X';
-                /*if(playersymbol1 == 'X')
-                    playersymbol2 = 'O';
-                else
-                    playersymbol2 ='X';*/
                 System.out.println("\n---------------Details---------------\n"+player1+"-"+playersymbol1+"\nCPU-"+playersymbol2);
-                
                 break;
             }
             case 2:
@@ -85,8 +82,12 @@ public class tictacktoevanisha
                             printgameboard(gameboardpos);
                             gameprocess();
                         }
+                    else
+                    {
+                        System.out.println("Exiting...");
+                    }
                 } while (conti.equalsIgnoreCase("y"));
-                
+                scan.close();
 }//closing main
 
     public static void gameprocess()
@@ -98,12 +99,21 @@ public class tictacktoevanisha
             System.out.println("\nEnter your placement (1-9) "+player1+" - ");
             int playerpos = scan.nextInt();
 
-                while(playerpositions.contains(playerpos) || cpupositions.contains(playerpos))
-                    {   
-                        System.out.println("Postion already taken :(\nEnter a correct postion");
-                        playerpos = scan.nextInt();
-                    }
+            while (playerpos < 1 || playerpos > 9 || playerpositions.contains(playerpos) || cpupositions.contains(playerpos)) 
+            {
+                if (playerpos < 1 || playerpos > 9) 
+                {
+                    System.out.println("Invalid position! Enter a position between 1 and 9: ");
+                } 
+                else 
+                {
+                    System.out.println("Position already taken! Enter a correct position: ");
+                }
+                playerpos = scan.nextInt();
+            }
+
             placepiece(gameboard,playerpos,"player");
+            System.out.println("\n"+player1+" placed a piece at "+playerpos);
             printgameboard(gameboard);
 
             String result = checkwinner();
@@ -125,13 +135,13 @@ public class tictacktoevanisha
                 cpupos = scan.nextInt();
             }
 
-            while(playerpositions.contains(cpupos) || cpupositions.contains(cpupos))   
+            while (cpupos < 1 || cpupos > 9 || playerpositions.contains(cpupos) || cpupositions.contains(cpupos)) 
                 {
-                cpupos = rand.nextInt(9) + 1;
+                    cpupos = rand.nextInt(9) + 1;
                 }
 
             placepiece(gameboard,cpupos,"CPU");
-
+            System.out.println(player2+" placed a piece at "+cpupos);
             printgameboard(gameboard);
             
             result = checkwinner();
@@ -142,8 +152,9 @@ public class tictacktoevanisha
                 }
         }//closing while
     }
+
 //resetting the board
-public static void resetboard() 
+public static void resetboard()
 {
     playerpositions.clear();
     cpupositions.clear();
@@ -159,7 +170,7 @@ public static void resetboard()
 }
 
 //printing the gameboard
-    public static void printgameboard(char[][] gameboard)
+public static void printgameboard(char[][] gameboard)
      {
         System.out.println();
        for(char[] row: gameboard)
@@ -172,8 +183,8 @@ public static void resetboard()
         }  
      }//closing printgamefn
 
-     
-    public static void placepiece(char[][] gameboard,int pos, String user)
+//placing the piece on the board     
+public static void placepiece(char[][] gameboard,int pos, String user)
     {
        
         char symbol=' ';
@@ -182,7 +193,7 @@ public static void resetboard()
                     symbol=playersymbol1;
                     playerpositions.add(pos);
                 }
-        else if(user.equals("CPU"))// we can change it to player 2 and take input from user or ai or random
+        else if(user.equals("CPU"))
                 {
                     symbol=playersymbol2;
                     cpupositions.add(pos);
@@ -225,7 +236,9 @@ public static void resetboard()
         
     }//closing piece placement fn
 
-    public static String checkwinner() {
+//cheching winner
+public static String checkwinner() 
+    {
         List<Integer> toprow = Arrays.asList(1, 2, 3);
         List<Integer> midrow = Arrays.asList(4, 5, 6);
         List<Integer> botrow = Arrays.asList(7, 8, 9);
@@ -247,18 +260,24 @@ public static void resetboard()
         winning.add(cross1);
         winning.add(cross2);
     
-        for (List<Integer> l : winning) {
-            if (playerpositions.containsAll(l)) {
-                return "Congrats! " + player1 + " won this round!";
-            } else if (cpupositions.containsAll(l)) {
-                return "CPU won this round!";
+        for (List<Integer> l : winning) 
+        {
+            if (playerpositions.containsAll(l)) 
+            {   
+                player1score++;
+                return "Congrats! " + player1 + " won this round!\nAnd the score is "+player1+"="+player1score+" "+player2+"="+player2score;
+            } 
+            else if (cpupositions.containsAll(l)) 
+            {   
+                player2score++;
+                return "CPU won this round!\nAnd the score is "+player1+"="+player1score+" "+player2+"="+player2score;
             }
         }
     
-        if (playerpositions.size() + cpupositions.size() == 9) {
-            return "It's a tie! Good match :)";
+        if (playerpositions.size() + cpupositions.size() == 9) 
+        {
+            return "It's a tie!\nAnd the score is "+player1+"="+player1score+" "+player2+"="+player2score+"\nGood match :)";
         }
-    
         return "";
     }
 }
